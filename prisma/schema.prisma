@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Organization {
+  id        String     @id @default(cuid())
+  name      String
+  logo      String?
+  industry  Industry
+  createdAt DateTime   @default(now())
+  reviews   Review[]
+}
+
+model Review {
+  id          String       @id @default(cuid())
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id])
+  username    String
+  avatar      String
+  avatarColor String
+  rating      Int
+  heading     String
+  body        String
+  emoji       String?
+  voiceUrl    String?
+  likes       Int          @default(0)
+  dislikes    Int          @default(0)
+  createdAt   DateTime     @default(now())
+  reactions   Reaction[]
+}
+
+model Reaction {
+  id          String       @id @default(cuid())
+  reviewId    String
+  review      Review       @relation(fields: [reviewId], references: [id])
+  type        ReactionType
+  fingerprint String
+  createdAt   DateTime     @default(now())
+
+  @@unique([reviewId, fingerprint])
+}
+
+enum Industry {
+  TECH
+  FINANCE
+  HEALTHCARE
+  EDUCATION
+  RETAIL
+  MEDIA
+  GOVERNMENT
+  ENERGY
+  MANUFACTURING
+  OTHER
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+}
