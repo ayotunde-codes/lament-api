@@ -11,17 +11,23 @@ export class OrganizationsService {
   async findAll(query: ListOrganizationsQuery) {
     const { search, industry, page = 1, limit = 20 } = query;
 
-    const orgs = await this.prisma.organization.findMany({
-      where: {
-        ...(search && { name: { contains: search, mode: 'insensitive' } }),
-        ...(industry && { industry }),
-      },
-      orderBy: { name: 'asc' },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    const where = {
+      ...(search && { name: { contains: search, mode: 'insensitive' as const } }),
+      ...(industry && { industry }),
+    };
 
-    return this.enrichWithStats(orgs);
+    const [orgs, total] = await Promise.all([
+      this.prisma.organization.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.organization.count({ where }),
+    ]);
+
+    const data = await this.enrichWithStats(orgs);
+    return { data, total, page, limit };
   }
 
   async findOne(id: string) {
@@ -57,7 +63,8 @@ export class OrganizationsService {
   }
 
   async create(dto: CreateOrganizationDto) {
-    return this.prisma.organization.create({ data: dto });
+    const org = await this.prisma.organization.create({ data: dto });
+    return { ...org, averageRating: 0, reviewCount: 0 };
   }
 
   private async enrichWithStats(orgs: Organization[]) {
