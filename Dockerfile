@@ -7,6 +7,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
+RUN npx prisma generate
 RUN npm run build
 
 # ── Dev (hot-reload) ─────────────────────────────────────────────────────────
@@ -30,6 +31,8 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
+COPY prisma ./prisma
+RUN npx prisma generate
 
 EXPOSE 3001
 
