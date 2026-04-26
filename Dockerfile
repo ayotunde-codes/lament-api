@@ -10,18 +10,6 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
-# ── Dev (hot-reload) ─────────────────────────────────────────────────────────
-FROM node:22-alpine AS dev
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci
-
-EXPOSE 3001
-
-CMD ["npm", "run", "start:dev"]
-
 # ── Production ───────────────────────────────────────────────────────────────
 FROM node:22-alpine AS production
 
