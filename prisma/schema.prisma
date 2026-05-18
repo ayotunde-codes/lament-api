@@ -16,9 +16,9 @@ model Organization {
 }
 
 model Review {
-  id          String       @id @default(cuid())
+  id          String           @id @default(cuid())
   orgId       String
-  org         Organization @relation(fields: [orgId], references: [id])
+  org         Organization     @relation(fields: [orgId], references: [id])
   username    String
   avatar      String
   avatarColor String
@@ -27,10 +27,13 @@ model Review {
   body        String
   emoji       String?
   voiceUrl    String?
-  likes       Int          @default(0)
-  dislikes    Int          @default(0)
-  createdAt   DateTime     @default(now())
+  tags        String[]         @default([])
+  tenure      Tenure?
+  role        Role?
+  status      EmploymentStatus?
+  createdAt   DateTime         @default(now())
   reactions   Reaction[]
+  comments    Comment[]
 }
 
 model Reaction {
@@ -42,6 +45,20 @@ model Reaction {
   createdAt   DateTime     @default(now())
 
   @@unique([reviewId, fingerprint])
+  @@index([reviewId, type])
+}
+
+model Comment {
+  id          String   @id @default(cuid())
+  reviewId    String
+  review      Review   @relation(fields: [reviewId], references: [id])
+  username    String
+  avatar      String
+  avatarColor String
+  body        String
+  createdAt   DateTime @default(now())
+
+  @@index([reviewId, createdAt])
 }
 
 enum Industry {
@@ -58,6 +75,36 @@ enum Industry {
 }
 
 enum ReactionType {
-  LIKE
-  DISLIKE
+  REAL_TEA
+  CAP
+  HOT_TAKE
+  HELPFUL
+  TOO_REAL
+}
+
+enum Tenure {
+  LT_1Y
+  ONE_TO_TWO_Y
+  THREE_TO_FIVE_Y
+  FIVE_PLUS_Y
+  INTERVIEW
+}
+
+enum Role {
+  ENGINEERING
+  DESIGN
+  PRODUCT
+  SALES
+  MARKETING
+  OPS
+  HR
+  FINANCE
+  CUSTOMER_SUPPORT
+  OTHER
+}
+
+enum EmploymentStatus {
+  CURRENT
+  FORMER
+  INTERVIEWED
 }

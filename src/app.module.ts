@@ -8,6 +8,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
 import { OrganizationsModule } from './organizations/organizations.module.js';
 import { ReviewsModule } from './reviews/reviews.module.js';
 import { ReactionsModule } from './reactions/reactions.module.js';
+import { CommentsModule } from './comments/comments.module.js';
 import { VoiceModule } from './voice/voice.module.js';
 import { HealthController } from './health/health.controller.js';
 import { appConfig } from './config/app.config.js';
@@ -20,12 +21,10 @@ import { appConfig } from './config/app.config.js';
     OrganizationsModule,
     ReviewsModule,
     ReactionsModule,
+    CommentsModule,
     VoiceModule,
   ],
   controllers: [AppController, HealthController],
-  providers: [
-    AppService,
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
-  ],
+  providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}
