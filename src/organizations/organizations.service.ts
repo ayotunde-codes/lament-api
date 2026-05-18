@@ -12,7 +12,9 @@ export class OrganizationsService {
     const { search, industry, page = 1, limit = 20 } = query;
 
     const where = {
-      ...(search && { name: { contains: search, mode: 'insensitive' as const } }),
+      ...(search && {
+        name: { contains: search, mode: 'insensitive' as const },
+      }),
       ...(industry && { industry }),
     };
 
@@ -59,6 +61,32 @@ export class OrganizationsService {
       ...orgMap.get(r.orgId)!,
       averageRating: r._avg.rating ?? 0,
       reviewCount: r._count.rating,
+    }));
+  }
+
+  async vibeChecks(orgId: string) {
+    const org = await this.prisma.organization.findUnique({
+      where: { id: orgId },
+    });
+    if (!org) throw new NotFoundException(`Organization ${orgId} not found`);
+
+    const rows = await this.prisma.$queryRaw<
+      { tag: string; avgRating: number; count: bigint }[]
+    >`
+      SELECT
+        t.tag                    AS "tag",
+        AVG(r.rating)::float     AS "avgRating",
+        COUNT(*)::int            AS "count"
+      FROM "Review" r, UNNEST(r.tags) AS t(tag)
+      WHERE r."orgId" = ${orgId}
+      GROUP BY t.tag
+      ORDER BY COUNT(*) DESC
+    `;
+
+    return rows.map((r) => ({
+      tag: r.tag,
+      avgRating: r.avgRating,
+      count: Number(r.count),
     }));
   }
 

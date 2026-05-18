@@ -17,6 +17,11 @@ export class OrganizationsController {
     return this.orgsService.findAll(query);
   }
 
+  @Get(':id/vibe-checks')
+  vibeChecks(@Param('id') id: string) {
+    return this.orgsService.vibeChecks(id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.orgsService.findOne(id);
