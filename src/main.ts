@@ -29,7 +29,11 @@ async function bootstrap() {
 
   // 6.1 — Global validation
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
   );
 
   app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
