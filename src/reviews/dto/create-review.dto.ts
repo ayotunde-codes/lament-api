@@ -1,4 +1,8 @@
 import {
+  ArrayMaxSize,
+  IsArray,
+  IsEnum,
+  IsIn,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -8,6 +12,8 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import { Tenure, Role, EmploymentStatus } from '@prisma/client';
+import { REVIEW_TAGS } from '../review-tags.constant.js';
 
 export class CreateReviewDto {
   @IsString()
@@ -36,4 +42,22 @@ export class CreateReviewDto {
   @IsOptional()
   @IsUrl()
   voiceUrl?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(3)
+  @IsIn(REVIEW_TAGS, { each: true })
+  tags?: string[];
+
+  @IsOptional()
+  @IsEnum(Tenure)
+  tenure?: Tenure;
+
+  @IsOptional()
+  @IsEnum(Role)
+  role?: Role;
+
+  @IsOptional()
+  @IsEnum(EmploymentStatus)
+  status?: EmploymentStatus;
 }

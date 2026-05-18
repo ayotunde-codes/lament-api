@@ -1,5 +1,6 @@
-import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 import { Type } from 'class-transformer';
+import { REVIEW_TAGS } from '../review-tags.constant.js';
 
 export enum ReviewSort {
   Latest = 'latest',
@@ -22,4 +23,9 @@ export class ListReviewsQuery {
   @Min(1)
   @Max(50)
   limit?: number = 20;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(REVIEW_TAGS)
+  tag?: string;
 }
